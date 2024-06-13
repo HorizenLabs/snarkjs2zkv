@@ -64,7 +64,9 @@ function getCurveName(curve) {
 const pointToHexLE = (curveType, point) => {
   const p = curveType.fromObject(point);
   const pUncompressed = curveType.toUncompressed(p);
-  return "0x" + toHexString(pUncompressed);
+  const x = pUncompressed.slice(0, curveType.F.n8).reverse();
+  const y = pUncompressed.slice(curveType.F.n8).reverse();
+  return "0x" + toHexString(x) + toHexString(y);
 };
 
 function scalarToHexLE(scalarType, scalar) {
