@@ -34,10 +34,11 @@ program
   .action(async (filename, options) => {
     const proofIn = JSON.parse(fs.readFileSync(filename, "utf8"));
     const proofOut = await convertProof(proofIn);
+    const proofOutJSON = JSON.stringify(proofOut, null, 2);
     if (options.out) {
-      fs.writeFileSync(options.out, JSON.stringify(proofOut, null, 2));
+      fs.writeFileSync(options.out, proofOutJSON);
     } else {
-      console.log(proofOut);
+      console.log(proofOutJSON);
     }
   });
 
@@ -52,10 +53,11 @@ program
   .action(async (filename, options) => {
     const vkIn = JSON.parse(fs.readFileSync(filename, "utf8"));
     const vkOut = await convertVk(vkIn);
+    const vkOutJSON = JSON.stringify(vkOut, null, 2);
     if (options.out) {
-      fs.writeFileSync(options.out, JSON.stringify(vkOut, null, 2));
+      fs.writeFileSync(options.out, vkOutJSON);
     } else {
-      console.log(vkOut);
+      console.log(vkOutJSON);
     }
   });
 
@@ -75,10 +77,11 @@ program
   .action(async (filename, options) => {
     const pubIn = JSON.parse(fs.readFileSync(filename, "utf8"));
     const pubOut = await convertPub(pubIn, options.curve);
+    const pubOutJSON = JSON.stringify(pubOut, null, 2);
     if (options.out) {
-      fs.writeFileSync(options.out, JSON.stringify(pubOut, null, 2));
+      fs.writeFileSync(options.out, pubOutJSON);
     } else {
-      console.log(pubOut);
+      console.log(pubOutJSON);
     }
   });
 
