@@ -7,6 +7,11 @@ Command line utility for converting Groth16 artifacts from snarkJS format to zkV
 npm install
 ```
 
+## Testing
+```
+npm test
+```
+
 ## Usage
 - Converting a snarkJS Groth16 zk-proof stored in file `proof.json`
     ```bash
