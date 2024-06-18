@@ -20,23 +20,43 @@ const { toRprLE } = Scalar;
 async function convertProof(proofJSON) {
   const proof = unstringifyBigInts(proofJSON);
   const curve = await getCurveFromName(proof.curve);
+  const curveName = getCurveName(curve);
+  let endianess;
+  switch (curveName) {
+    case "Bn254":
+      endianess = "LE";
+      break;
+    case "Bls12_381":
+      endianess = "BE";
+      break;
+  }
   return {
-    a: pointToHexLE(curve.G1, proof.pi_a),
-    b: pointToHexLE(curve.G2, proof.pi_b),
-    c: pointToHexLE(curve.G1, proof.pi_c),
+    a: pointToHex(curve.G1, proof.pi_a, endianess),
+    b: pointToHex(curve.G2, proof.pi_b, endianess),
+    c: pointToHex(curve.G1, proof.pi_c, endianess),
   };
 }
 
 async function convertVk(vkJSON) {
   const vk = unstringifyBigInts(vkJSON);
   const curve = await getCurveFromName(vk.curve);
+  const curveName = getCurveName(curve);
+  let endianess;
+  switch (curveName) {
+    case "Bn254":
+      endianess = "LE";
+      break;
+    case "Bls12_381":
+      endianess = "BE";
+      break;
+  }
   return {
-    curve: getCurveName(curve),
-    alphaG1: pointToHexLE(curve.G1, vk.vk_alpha_1),
-    betaG2: pointToHexLE(curve.G2, vk.vk_beta_2),
-    gammaG2: pointToHexLE(curve.G2, vk.vk_gamma_2),
-    deltaG2: pointToHexLE(curve.G2, vk.vk_delta_2),
-    gammaAbcG1: vk.IC.map((point) => pointToHexLE(curve.G1, point)),
+    curve: curveName,
+    alphaG1: pointToHex(curve.G1, vk.vk_alpha_1, endianess),
+    betaG2: pointToHex(curve.G2, vk.vk_beta_2, endianess),
+    gammaG2: pointToHex(curve.G2, vk.vk_gamma_2, endianess),
+    deltaG2: pointToHex(curve.G2, vk.vk_delta_2, endianess),
+    gammaAbcG1: vk.IC.map((point) => pointToHex(curve.G1, point, endianess)),
   };
 }
 
@@ -61,11 +81,21 @@ function getCurveName(curve) {
   return curveName;
 }
 
-const pointToHexLE = (curveType, point) => {
+const pointToHex = (curveType, point, endianess) => {
   const p = curveType.fromObject(point);
   const pUncompressed = curveType.toUncompressed(p);
-  const x = pUncompressed.slice(0, curveType.F.n8).reverse();
-  const y = pUncompressed.slice(curveType.F.n8).reverse();
+  let x = pUncompressed.slice(0, curveType.F.n8);
+  let y = pUncompressed.slice(curveType.F.n8);
+  switch (endianess) {
+    case "LE":
+      x.reverse();
+      y.reverse();
+      break;
+    case "BE":
+      break;
+    default:
+      throw new Error("pointEndianess must be either BE or LE");
+  }
   return "0x" + toHexString(x) + toHexString(y);
 };
 
@@ -81,4 +111,9 @@ function toHexString(byteArray) {
   }).join("");
 }
 
-module.exports = { convertProof, convertVk, convertPub };
+module.exports = {
+  convertProof,
+  convertVk,
+  convertPub,
+  pointToHexLE: pointToHex,
+};
