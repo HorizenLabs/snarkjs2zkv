@@ -24,16 +24,16 @@ async function convertProof(proofJSON) {
   let endianess;
   switch (curveName) {
     case "Bn254":
-      endianess = "BE";
+      endianess = "LE";
       break;
     case "Bls12_381":
-      endianess = "LE";
+      endianess = "BE";
       break;
   }
   return {
-    a: pointToHexLE(curve.G1, proof.pi_a, endianess),
-    b: pointToHexLE(curve.G2, proof.pi_b, endianess),
-    c: pointToHexLE(curve.G1, proof.pi_c, endianess),
+    a: pointToHex(curve.G1, proof.pi_a, endianess),
+    b: pointToHex(curve.G2, proof.pi_b, endianess),
+    c: pointToHex(curve.G1, proof.pi_c, endianess),
   };
 }
 
@@ -44,19 +44,19 @@ async function convertVk(vkJSON) {
   let endianess;
   switch (curveName) {
     case "Bn254":
-      endianess = "BE";
+      endianess = "LE";
       break;
     case "Bls12_381":
-      endianess = "LE";
+      endianess = "BE";
       break;
   }
   return {
     curve: curveName,
-    alphaG1: pointToHexLE(curve.G1, vk.vk_alpha_1, endianess),
-    betaG2: pointToHexLE(curve.G2, vk.vk_beta_2, endianess),
-    gammaG2: pointToHexLE(curve.G2, vk.vk_gamma_2, endianess),
-    deltaG2: pointToHexLE(curve.G2, vk.vk_delta_2, endianess),
-    gammaAbcG1: vk.IC.map((point) => pointToHexLE(curve.G1, point, endianess)),
+    alphaG1: pointToHex(curve.G1, vk.vk_alpha_1, endianess),
+    betaG2: pointToHex(curve.G2, vk.vk_beta_2, endianess),
+    gammaG2: pointToHex(curve.G2, vk.vk_gamma_2, endianess),
+    deltaG2: pointToHex(curve.G2, vk.vk_delta_2, endianess),
+    gammaAbcG1: vk.IC.map((point) => pointToHex(curve.G1, point, endianess)),
   };
 }
 
@@ -81,17 +81,17 @@ function getCurveName(curve) {
   return curveName;
 }
 
-const pointToHexLE = (curveType, point, pointEndianess) => {
+const pointToHex = (curveType, point, endianess) => {
   const p = curveType.fromObject(point);
   const pUncompressed = curveType.toUncompressed(p);
   let x = pUncompressed.slice(0, curveType.F.n8);
   let y = pUncompressed.slice(curveType.F.n8);
-  switch (pointEndianess) {
-    case "BE":
+  switch (endianess) {
+    case "LE":
       x.reverse();
       y.reverse();
       break;
-    case "LE":
+    case "BE":
       break;
     default:
       throw new Error("pointEndianess must be either BE or LE");
@@ -115,5 +115,5 @@ module.exports = {
   convertProof,
   convertVk,
   convertPub,
-  pointToHexLE,
+  pointToHexLE: pointToHex,
 };

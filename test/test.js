@@ -40,7 +40,7 @@ describe("Serialize", function () {
         const scalar = 42;
         const point = curve.G1.timesScalar(generator, scalar);
         assert.equal(
-          pointToHexLE(curve.G1, curve.G1.toObject(point), "BE"),
+          pointToHexLE(curve.G1, curve.G1.toObject(point), "LE"),
           arkworksG1Times42.bn128
         );
       });
@@ -55,7 +55,7 @@ describe("Serialize", function () {
         const scalar = 42;
         const point = curve.G1.timesScalar(generator, scalar);
         assert.equal(
-          pointToHexLE(curve.G1, curve.G1.toObject(point), "LE"),
+          pointToHexLE(curve.G1, curve.G1.toObject(point), "BE"),
           arkworksG1Times42.bls12381
         );
       });
@@ -70,7 +70,7 @@ describe("Serialize", function () {
         const scalar = 42;
         const point = curve.G2.timesScalar(generator, scalar);
         assert.equal(
-          pointToHexLE(curve.G2, curve.G2.toObject(point), "BE"),
+          pointToHexLE(curve.G2, curve.G2.toObject(point), "LE"),
           arkworksG2Times42.bn128
         );
       });
@@ -85,7 +85,7 @@ describe("Serialize", function () {
         const scalar = 42;
         const point = curve.G2.timesScalar(generator, scalar);
         assert.equal(
-          pointToHexLE(curve.G2, curve.G2.toObject(point), "LE"),
+          pointToHexLE(curve.G2, curve.G2.toObject(point), "BE"),
           arkworksG2Times42.bls12381
         );
       });
