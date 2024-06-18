@@ -13,10 +13,85 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-const { convertProof, convertVk, convertPub } = require(".../../../convert");
+const {
+  convertProof,
+  convertVk,
+  convertPub,
+  pointToHexLE,
+} = require(".../../../convert");
 const assert = require("assert");
 const { testData } = require("./test_data");
-const { proof: proofData, vk: vkData, pub: pubData } = testData;
+const { getCurveFromName } = require("ffjavascript");
+
+const {
+  proof: proofData,
+  vk: vkData,
+  pub: pubData,
+  arkworksG1Times42,
+  arkworksG2Times42,
+} = testData;
+
+describe("Serialize", function () {
+  describe("G1 * 42", function () {
+    describe("BN128", async function () {
+      it("should give the same result as arkworks", async function () {
+        const curve = await getCurveFromName("bn128");
+        const generator = curve.G1.gAffine;
+        const scalar = 42;
+        const point = curve.G1.timesScalar(generator, scalar);
+        assert.equal(
+          pointToHexLE(curve.G1, curve.G1.toObject(point), "BE"),
+          arkworksG1Times42.bn128
+        );
+      });
+    });
+  });
+
+  describe("G1 * 42", function () {
+    describe("BLS12-381", async function () {
+      it("should give the same result as arkworks", async function () {
+        const curve = await getCurveFromName("bls12381");
+        const generator = curve.G1.gAffine;
+        const scalar = 42;
+        const point = curve.G1.timesScalar(generator, scalar);
+        assert.equal(
+          pointToHexLE(curve.G1, curve.G1.toObject(point), "LE"),
+          arkworksG1Times42.bls12381
+        );
+      });
+    });
+  });
+
+  describe("G2 * 42", function () {
+    describe("BN128", async function () {
+      it("should give the same result as arkworks", async function () {
+        const curve = await getCurveFromName("bn128");
+        const generator = curve.G2.gAffine;
+        const scalar = 42;
+        const point = curve.G2.timesScalar(generator, scalar);
+        assert.equal(
+          pointToHexLE(curve.G2, curve.G2.toObject(point), "BE"),
+          arkworksG2Times42.bn128
+        );
+      });
+    });
+  });
+
+  describe("G2 * 42", function () {
+    describe("BLS12-381", async function () {
+      it("should give the same result as arkworks", async function () {
+        const curve = await getCurveFromName("bls12381");
+        const generator = curve.G2.gAffine;
+        const scalar = 42;
+        const point = curve.G2.timesScalar(generator, scalar);
+        assert.equal(
+          pointToHexLE(curve.G2, curve.G2.toObject(point), "LE"),
+          arkworksG2Times42.bls12381
+        );
+      });
+    });
+  });
+});
 
 describe("Convert", function () {
   describe("Proof", function () {
